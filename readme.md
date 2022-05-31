@@ -1,6 +1,6 @@
 # Bi-modal-model
 
-The inference container for the bimodal (text and image) Weaviate module.
+The inference container for the bi-modal (text and image) Weaviate module.
 
 ## Information
 
