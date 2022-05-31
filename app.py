@@ -13,7 +13,7 @@ logger = getLogger('uvicorn')
 
 @app.on_event("startup")
 def startup_event():
-    global ner
+    global imgVec
     global meta_config
 
     cuda_env = os.getenv("ENABLE_CUDA")
@@ -30,6 +30,7 @@ def startup_event():
         logger.info("Running on CPU")
 
     imgVec = ImageVectorizer(cuda_support, cuda_core)
+    meta_config = Meta('./models/model')
 
 @app.get("/.well-known/live", response_class=Response)
 @app.get("/.well-known/ready", response_class=Response)
@@ -45,7 +46,7 @@ def meta():
 @app.post("/vectors")
 def read_item(item: VectorImagePayload, response: Response):
 	try:
-		vector = imgVec.vectorize()
+		vector = imgVec.vectorize(item)
 		return {"id": item.id, "vector": vector.tolist(), "dim": len(vector)}
 	except Exception as e:
 		logger.exception(

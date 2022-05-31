@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import os
 import sys
 import logging
@@ -18,3 +17,4 @@ processor = AutoProcessor.from_pretrained(model_name)
 
 model.save_pretrained('./models/model')
 tokenizer.save_pretrained('./models/model')
+processor.save_pretrained('./models/model')
