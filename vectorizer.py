@@ -1,0 +1,49 @@
+from pydantic import BaseModel
+from transformers import LayoutLMv2Processor, LayoutLMv2Model
+from PIL import Image
+import base64
+import os
+
+
+class VectorImagePayload(BaseModel):
+    id: str
+    image: str
+
+
+class ImageVectorizer:
+    name: str
+    processor: LayoutLMv2Processor
+    model: LayoutLMv2Model
+
+    def __init__(self, cuda_support, cuda_core):
+        self.name = './models/model'
+        self.processor = LayoutLMv2Processor.from_pretrained(self.name)
+        self.model = LayoutLMv2Model.from_pretrained(self.name)
+
+    def vectorize(self, item: VectorImagePayload):
+        try:
+            image = Image.open(base64.decode(item.image))
+            image = image.convert('RGB')
+            # todo: add the ability to provide OCR in the processor
+            encoding = self.processor(image, return_tensors="pt")
+            outputs = self.model(**encoding)
+            last_hidden_states = outputs.last_hidden_state
+            return last_hidden_states
+        except (RuntimeError, TypeError, NameError, Exception) as e:
+            print('vectorize error:', e)
+            raise e
+
+    def save_image(self, id: str, image: str):
+        try:
+            filepath = id
+            file_content = base64.b64decode(image)
+            with open(filepath, "wb") as f:
+                f.write(file_content)
+            return filepath
+        except Exception as e:
+            print(str(e))
+            return ""
+
+    def remove_file(self, filepath: str):
+        if os.path.exists(filepath):
+            os.remove(filepath)
