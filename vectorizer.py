@@ -1,10 +1,15 @@
 from pydantic import BaseModel
-from transformers import LayoutLMv2Processor, LayoutLMv2Model
+from transformers import LayoutLMv2Processor, LayoutLMv2Model, utils
 from meta import Meta
 from PIL import Image
 import base64
 import os
 import io
+
+if utils.is_torch_available():
+    import torch
+    if torch.cuda.is_available():
+        os.environ['ENABLE_CUDA'] = 'true'
 
 
 class VectorImagePayload(BaseModel):
