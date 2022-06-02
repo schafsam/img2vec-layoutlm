@@ -54,3 +54,8 @@ def read_item(item: VectorImagePayload, response: Response):
         )
 		response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 		return {"error": str(e)}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="127.0.0.1", port=8000, log_level="info", reload=True)
