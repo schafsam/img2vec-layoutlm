@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from transformers import LayoutLMv2Processor, LayoutLMv2Model, utils
-from meta import Meta
+import torch
 from PIL import Image
 import base64
 import os
@@ -35,7 +35,8 @@ class ImageVectorizer:
             image = image.convert('RGB')
             # todo: add the ability to provide OCR in the processor
             encoding = self.processor(image, max_length=self.meta.config.max_position_embeddings, return_tensors="pt")
-            outputs = self.model(**encoding)
+            with torch.no_grad():
+                outputs = self.model(**encoding)
             return outputs.last_hidden_state[:,0,:]
         except (RuntimeError, TypeError, NameError, Exception) as e:
             print('vectorize error:', e)
